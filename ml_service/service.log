@@ -25,3 +25,21 @@
 2026-11-25 17:37:19,091 - INFO - 127.0.0.1 - - [25/Nov/2026 17:37:19] "POST /api/forecast HTTP/1.1" 200 -
 2026-11-25 17:37:20,951 - INFO - Generated forecast for product 4 across 7 days. Recommended: LASSO_REGRESSION | CV: 34.6%
 2026-11-25 17:37:20,951 - INFO - 127.0.0.1 - - [25/Nov/2026 17:37:20] "POST /api/forecast HTTP/1.1" 200 -
+2026-11-25 17:50:43,994 - INFO - Generated forecast for product 5 across 7 days. Recommended: LASSO_REGRESSION | CV: 46.8%
+2026-11-25 17:50:43,995 - INFO - 127.0.0.1 - - [25/Nov/2026 17:50:43] "POST /api/forecast HTTP/1.1" 200 -
+2026-11-25 18:05:25,000 - INFO - Generated forecast for product 5 across 7 days. Recommended: LASSO_REGRESSION | CV: 46.8%
+2026-11-25 18:05:25,000 - INFO - 127.0.0.1 - - [25/Nov/2026 18:05:25] "POST /api/forecast HTTP/1.1" 200 -
+2026-11-25 18:06:02,180 - INFO - Generated forecast for product 5 across 7 days. Recommended: LASSO_REGRESSION | CV: 46.8%
+2026-11-25 18:06:02,180 - INFO - 127.0.0.1 - - [25/Nov/2026 18:06:02] "POST /api/forecast HTTP/1.1" 200 -
+2026-11-25 18:06:52,411 - INFO - Generated forecast for product 3 across 7 days. Recommended: LASSO_REGRESSION | CV: 31.18%
+2026-11-25 18:06:52,411 - INFO - 127.0.0.1 - - [25/Nov/2026 18:06:52] "POST /api/forecast HTTP/1.1" 200 -
+2026-11-25 18:11:14,336 - INFO - Generated forecast for product 3 across 7 days. Recommended: LASSO_REGRESSION | CV: 31.18%
+2026-11-25 18:11:14,337 - INFO - 127.0.0.1 - - [25/Nov/2026 18:11:14] "POST /api/forecast HTTP/1.1" 200 -
+2026-11-25 18:11:17,353 - INFO - Generated forecast for product 3 across 7 days. Recommended: LASSO_REGRESSION | CV: 31.18%
+2026-11-25 18:11:17,354 - INFO - 127.0.0.1 - - [25/Nov/2026 18:11:17] "POST /api/forecast HTTP/1.1" 200 -
+2026-11-25 18:11:32,545 - INFO - Generated forecast for product 5 across 7 days. Recommended: LASSO_REGRESSION | CV: 46.8%
+2026-11-25 18:11:32,546 - INFO - 127.0.0.1 - - [25/Nov/2026 18:11:32] "POST /api/forecast HTTP/1.1" 200 -
+2026-11-25 18:14:14,607 - INFO - Generated forecast for product 5 across 7 days. Recommended: LASSO_REGRESSION | CV: 46.8%
+2026-11-25 18:14:14,608 - INFO - 127.0.0.1 - - [25/Nov/2026 18:14:14] "POST /api/forecast HTTP/1.1" 200 -
+2026-11-25 18:14:14,823 - INFO - Generated forecast for product 5 across 7 days. Recommended: LASSO_REGRESSION | CV: 46.8%
+2026-11-25 18:14:14,823 - INFO - 127.0.0.1 - - [25/Nov/2026 18:14:14] "POST /api/forecast HTTP/1.1" 200 -

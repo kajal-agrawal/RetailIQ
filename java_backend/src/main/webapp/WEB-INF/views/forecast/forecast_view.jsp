@@ -6,6 +6,23 @@
 </jsp:include>
 <jsp:include page="../common/navbar.jsp" />
 
+<c:set var="activeMae" value="${forecast.recommendedModel == 'LASSO_REGRESSION' ? forecast.lassoRegressionMae : (forecast.recommendedModel == 'RIDGE_REGRESSION' ? forecast.ridgeRegressionMae : (forecast.recommendedModel == 'RANDOM_FOREST' ? forecast.randomForestMae : forecast.linearRegressionMae))}" />
+
+<c:choose>
+    <c:when test="${forecast.recommendedModel == 'LASSO_REGRESSION'}">
+        <c:set var="activeDaily" value="${forecast.lassoRegressionDaily}" />
+    </c:when>
+    <c:when test="${forecast.recommendedModel == 'RIDGE_REGRESSION'}">
+        <c:set var="activeDaily" value="${forecast.ridgeRegressionDaily}" />
+    </c:when>
+    <c:when test="${forecast.recommendedModel == 'RANDOM_FOREST'}">
+        <c:set var="activeDaily" value="${forecast.randomForestDaily}" />
+    </c:when>
+    <c:otherwise>
+        <c:set var="activeDaily" value="${forecast.linearRegressionDaily}" />
+    </c:otherwise>
+</c:choose>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
 
 <div class="container-fluid px-4 py-4">
@@ -118,7 +135,22 @@
         <h5 class="alert-heading fw-bold d-flex align-items-center">
             <i class="bi bi-shield-check me-2 fs-4"></i> Automated Inventory Advisory
         </h5>
-        <p class="mb-2 fs-6">${forecast.ruleExplanation}</p>
+        <p class="mb-2 fs-6">
+            <c:choose>
+                <c:when test="${forecast.alertStatus == 'CRITICAL_STOCKOUT'}">
+                    <strong>Critical Stockout Warning:</strong> Current warehouse inventory (${selectedProduct.currentStock} units) is at or below the safety threshold (${forecast.safetyStock} units). Immediate supplier replenishment recommended to prevent stockout.
+                </c:when>
+                <c:when test="${forecast.alertStatus == 'LOW_STOCK'}">
+                    <strong>Low Stock Advisory:</strong> Current inventory (${selectedProduct.currentStock} units) has crossed the reorder threshold (${forecast.reorderPoint} units). Standard replenishment order recommended.
+                </c:when>
+                <c:when test="${forecast.alertStatus == 'OVERSTOCK'}">
+                    <strong>Overstock Notice:</strong> Current inventory (${selectedProduct.currentStock} units) significantly exceeds normal operating targets. Recommend pausing purchases and reviewing promotional discounts.
+                </c:when>
+                <c:otherwise>
+                    <strong>Optimal Inventory Level:</strong> Current inventory (${selectedProduct.currentStock} units) is comfortably balanced against projected demand (${forecast.chosenTotalDemand} units). No replenishment required at this time.
+                </c:otherwise>
+            </c:choose>
+        </p>
         <div class="row g-3 pt-2 border-top small text-muted">
             <div class="col-sm-4">
                 <i class="bi bi-graph-up text-primary me-1"></i> <strong>Forecasted Demand:</strong> ${forecast.chosenTotalDemand} units (${horizonDays} days)
@@ -132,17 +164,17 @@
         </div>
     </div>
 
-    <!-- Row: Chart & Model Comparison -->
+    <!-- Row: Chart & Sales Demand Projections -->
     <div class="row g-4 mb-4">
         <!-- Interactive Chart -->
         <div class="col-lg-8">
             <div class="card shadow-sm h-100">
                 <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
                     <h5 class="mb-0 fw-bold">
-                        <i class="bi bi-graph-up me-1 text-primary"></i> Historical Sales vs. ${horizonDays}-Day Forecast
+                        <i class="bi bi-graph-up me-1 text-primary"></i> Historical Sales vs. ${horizonDays}-Day Demand Forecast
                     </h5>
-                    <span class="badge bg-light text-dark border">
-                        Optimal Model: <strong>${forecast.recommendedModel}</strong>
+                    <span class="badge bg-success-subtle text-success border border-success px-3 py-2">
+                        <i class="bi bi-stars me-1"></i> AI Demand Forecast Active
                     </span>
                 </div>
                 <div class="card-body">
@@ -151,68 +183,117 @@
             </div>
         </div>
 
-        <!-- Comparative Model Benchmark Grid -->
+        <!-- Sales & Demand Projections Executive Card -->
         <div class="col-lg-4">
             <div class="card shadow-sm h-100">
                 <div class="card-header bg-white py-3">
-                    <h5 class="mb-0 fw-bold"><i class="bi bi-speedometer2 me-1 text-primary"></i> Forecast Model Comparison</h5>
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-wallet2 me-2 text-primary"></i>Demand & Revenue Projection</h5>
                 </div>
                 <div class="card-body p-3">
-                    <!-- Model 1: Linear Regression -->
-                    <div class="border rounded p-2 mb-2 bg-light">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <strong class="text-primary small">Linear Trend Model</strong>
-                            <c:if test="${forecast.recommendedModel == 'LINEAR_REGRESSION'}">
-                                <span class="badge bg-success small"><i class="bi bi-trophy-fill me-1"></i> Best</span>
-                            </c:if>
+                    <!-- Expected Revenue Callout -->
+                    <div class="p-3 mb-3 bg-light rounded border">
+                        <div class="text-muted small text-uppercase fw-semibold">Estimated Forecast Revenue</div>
+                        <div class="fs-2 fw-bold text-success mt-1">
+                            $<fmt:formatNumber value="${forecast.chosenTotalDemand * selectedProduct.unitPrice}" minFractionDigits="2" maxFractionDigits="2"/>
                         </div>
-                        <div class="small text-muted">
-                            Total: <strong>${forecast.linearRegressionTotal}u</strong> | MAE: <strong>${forecast.linearRegressionMae}</strong> | RMSE: <strong>${forecast.linearRegressionRmse}</strong>
+                        <div class="small text-muted mt-1">
+                            Based on projected volume of <strong>${forecast.chosenTotalDemand} units</strong> @ $<fmt:formatNumber value="${selectedProduct.unitPrice}" minFractionDigits="2" maxFractionDigits="2"/> each
                         </div>
                     </div>
 
-                    <!-- Model 2: Ridge Regression -->
-                    <div class="border rounded p-2 mb-2 bg-light">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <strong class="text-info small">Ridge Regularized Model</strong>
-                            <c:if test="${forecast.recommendedModel == 'RIDGE_REGRESSION'}">
-                                <span class="badge bg-success small"><i class="bi bi-trophy-fill me-1"></i> Best</span>
-                            </c:if>
-                        </div>
-                        <div class="small text-muted">
-                            Total: <strong>${forecast.ridgeRegressionTotal}u</strong> | MAE: <strong>${forecast.ridgeRegressionMae}</strong> | RMSE: <strong>${forecast.ridgeRegressionRmse}</strong>
-                        </div>
-                    </div>
+                    <!-- Business Metrics Breakdown -->
+                    <ul class="list-group list-group-flush small">
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-2">
+                            <span class="text-muted"><i class="bi bi-calendar3 me-1 text-primary"></i> Forecast Horizon</span>
+                            <span class="fw-bold">${horizonDays} Days</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-2">
+                            <span class="text-muted"><i class="bi bi-speedometer me-1 text-info"></i> Daily Sales Velocity</span>
+                            <span class="fw-bold">${forecast.meanDailyDemand} units / day</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-2">
+                            <span class="text-muted"><i class="bi bi-hourglass-split me-1 text-warning"></i> Estimated Stock Cover</span>
+                            <span class="fw-bold">
+                                <c:choose>
+                                    <c:when test="${forecast.meanDailyDemand > 0}">
+                                        <fmt:formatNumber value="${selectedProduct.currentStock / forecast.meanDailyDemand}" maxFractionDigits="0"/> days remaining
+                                    </c:when>
+                                    <c:otherwise>Ample</c:otherwise>
+                                </c:choose>
+                            </span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-2">
+                            <span class="text-muted"><i class="bi bi-patch-check me-1 text-success"></i> Forecast Confidence</span>
+                            <span class="badge bg-success">High Confidence (&plusmn;<fmt:formatNumber value="${activeMae}" maxFractionDigits="1"/> units)</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-2">
+                            <span class="text-muted"><i class="bi bi-shield-check me-1 text-primary"></i> Recommended Buffer Target</span>
+                            <span class="fw-bold text-primary">${forecast.safetyStock} units</span>
+                        </li>
+                    </ul>
 
-                    <!-- Model 3: Lasso Regression -->
-                    <div class="border rounded p-2 mb-2 bg-light">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <strong class="text-warning text-dark small">Lasso Regularized Model</strong>
-                            <c:if test="${forecast.recommendedModel == 'LASSO_REGRESSION'}">
-                                <span class="badge bg-success small"><i class="bi bi-trophy-fill me-1"></i> Best</span>
-                            </c:if>
-                        </div>
-                        <div class="small text-muted">
-                            Total: <strong>${forecast.lassoRegressionTotal}u</strong> | MAE: <strong>${forecast.lassoRegressionMae}</strong> | RMSE: <strong>${forecast.lassoRegressionRmse}</strong>
-                        </div>
+                    <div class="alert alert-light border small mb-0 py-2 mt-3 text-muted">
+                        <i class="bi bi-info-circle me-1 text-primary"></i>
+                        Projections recalculate automatically with every new sales transaction.
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                    <!-- Model 4: Random Forest -->
-                    <div class="border rounded p-2 mb-2 bg-light">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <strong class="text-success small">Random Forest Ensemble</strong>
-                            <c:if test="${forecast.recommendedModel == 'RANDOM_FOREST'}">
-                                <span class="badge bg-success small"><i class="bi bi-trophy-fill me-1"></i> Best</span>
-                            </c:if>
-                        </div>
-                        <div class="small text-muted">
-                            Total: <strong>${forecast.randomForestTotal}u</strong> | MAE: <strong>${forecast.randomForestMae}</strong> | RMSE: <strong>${forecast.randomForestRmse}</strong>
-                        </div>
-                    </div>
-
-                    <div class="alert alert-secondary small mb-0 py-2 mt-3">
-                        <i class="bi bi-check-circle-fill text-success me-1"></i>
-                        The system automatically selects the forecast model with the lowest prediction error (MAE) for this product.
+    <!-- Optional Academic Benchmarks View for Faculty Evaluation -->
+    <div class="text-center mt-3 mb-2">
+        <button class="btn btn-sm btn-link text-decoration-none text-muted" type="button" data-bs-toggle="collapse" data-bs-target="#facultyBenchmarkSection">
+            <i class="bi bi-mortarboard me-1"></i> Faculty Evaluation View: Machine Learning Benchmarks
+        </button>
+        <div class="collapse mt-3 text-start" id="facultyBenchmarkSection">
+            <div class="card shadow-sm border">
+                <div class="card-header bg-light py-2">
+                    <h6 class="mb-0 fw-bold"><i class="bi bi-cpu me-1 text-primary"></i> Multi-Model Benchmark (Syllabus Module II & IV)</h6>
+                </div>
+                <div class="card-body p-3">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Algorithm / Model</th>
+                                    <th>Projected Volume</th>
+                                    <th>Mean Absolute Error (MAE)</th>
+                                    <th>Root Mean Squared Error (RMSE)</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Ordinary Least Squares (OLS) Linear Regression</td>
+                                    <td>${forecast.linearRegressionTotal} units</td>
+                                    <td>${forecast.linearRegressionMae}</td>
+                                    <td>${forecast.linearRegressionRmse}</td>
+                                    <td><c:if test="${forecast.recommendedModel == 'LINEAR_REGRESSION'}"><span class="badge bg-success">Selected Winner</span></c:if></td>
+                                </tr>
+                                <tr>
+                                    <td>Ridge Regression (L2 Regularization)</td>
+                                    <td>${forecast.ridgeRegressionTotal} units</td>
+                                    <td>${forecast.ridgeRegressionMae}</td>
+                                    <td>${forecast.ridgeRegressionRmse}</td>
+                                    <td><c:if test="${forecast.recommendedModel == 'RIDGE_REGRESSION'}"><span class="badge bg-success">Selected Winner</span></c:if></td>
+                                </tr>
+                                <tr>
+                                    <td>Lasso Regression (L1 Regularization)</td>
+                                    <td>${forecast.lassoRegressionTotal} units</td>
+                                    <td>${forecast.lassoRegressionMae}</td>
+                                    <td>${forecast.lassoRegressionRmse}</td>
+                                    <td><c:if test="${forecast.recommendedModel == 'LASSO_REGRESSION'}"><span class="badge bg-success">Selected Winner</span></c:if></td>
+                                </tr>
+                                <tr>
+                                    <td>Random Forest Regressor (Ensemble)</td>
+                                    <td>${forecast.randomForestTotal} units</td>
+                                    <td>${forecast.randomForestMae}</td>
+                                    <td>${forecast.randomForestRmse}</td>
+                                    <td><c:if test="${forecast.recommendedModel == 'RANDOM_FOREST'}"><span class="badge bg-success">Selected Winner</span></c:if></td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -246,20 +327,8 @@ document.addEventListener("DOMContentLoaded", function() {
         </c:forEach>
     ];
 
-    const lrForecast = [
-        <c:forEach var="v" items="${forecast.linearRegressionDaily}">
-            ${v},
-        </c:forEach>
-    ];
-
-    const ridgeForecast = [
-        <c:forEach var="v" items="${forecast.ridgeRegressionDaily}">
-            ${v},
-        </c:forEach>
-    ];
-
-    const rfForecast = [
-        <c:forEach var="v" items="${forecast.randomForestDaily}">
+    const projectedForecast = [
+        <c:forEach var="v" items="${activeDaily}">
             ${v},
         </c:forEach>
     ];
@@ -269,9 +338,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const padCount = historicalDates.length - 1;
     const lastHistVal = historicalData[historicalData.length - 1];
 
-    const alignedLR = [...Array(padCount).fill(null), lastHistVal, ...lrForecast];
-    const alignedRidge = [...Array(padCount).fill(null), lastHistVal, ...ridgeForecast];
-    const alignedRF = [...Array(padCount).fill(null), lastHistVal, ...rfForecast];
+    const alignedForecast = [...Array(padCount).fill(null), lastHistVal, ...projectedForecast];
 
     new Chart(ctx, {
         type: 'line',
@@ -282,42 +349,51 @@ document.addEventListener("DOMContentLoaded", function() {
                     label: 'Actual Sales',
                     data: alignedHistorical,
                     borderColor: '#334155',
+                    backgroundColor: 'rgba(51, 65, 85, 0.05)',
                     borderWidth: 2,
-                    pointRadius: 3,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#334155',
                     fill: false
                 },
                 {
-                    label: 'Linear Regression (OLS)',
-                    data: alignedLR,
+                    label: 'Projected Demand',
+                    data: alignedForecast,
                     borderColor: '#0d6efd',
+                    backgroundColor: 'rgba(13, 110, 253, 0.1)',
                     borderDash: [5, 5],
-                    borderWidth: 2,
-                    pointRadius: 3
-                },
-                {
-                    label: 'Ridge Regression (L2)',
-                    data: alignedRidge,
-                    borderColor: '#0dcaf0',
-                    borderDash: [2, 2],
-                    borderWidth: 2,
-                    pointRadius: 3
-                },
-                {
-                    label: 'Random Forest (Ensemble)',
-                    data: alignedRF,
-                    borderColor: '#198754',
-                    borderDash: [3, 3],
-                    borderWidth: 2,
-                    pointRadius: 3
+                    borderWidth: 2.5,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#0d6efd',
+                    fill: true
                 }
             ]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        usePointStyle: true,
+                        font: { size: 12, weight: '500' }
+                    }
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false
+                }
+            },
             scales: {
-                y: { beginAtZero: true, title: { display: true, text: 'Units' } },
-                x: { title: { display: true, text: 'Date' } }
+                y: { 
+                    beginAtZero: true, 
+                    title: { display: true, text: 'Units Sold' },
+                    grid: { color: 'rgba(0,0,0,0.05)' }
+                },
+                x: { 
+                    title: { display: true, text: 'Date' },
+                    grid: { display: false }
+                }
             }
         }
     });

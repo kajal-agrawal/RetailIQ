@@ -16,7 +16,7 @@
             <h2 class="fw-bold mb-1">
                 <i class="bi bi-speedometer2 text-primary me-2"></i>Executive Analytics Dashboard
             </h2>
-            <p class="text-muted small mb-0">Real-time Retail Analytics, Inventory Velocity & Machine Learning Intelligence</p>
+            <p class="text-muted small mb-0">Real-time store performance, revenue velocity, and automated inventory health</p>
         </div>
         <div class="d-flex gap-2">
             <a href="${pageContext.request.contextPath}/sales?action=pos" class="btn btn-primary btn-sm">
@@ -78,7 +78,7 @@
             <div class="card p-3 shadow-sm h-100 border-start border-4 border-info">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <div class="text-muted small text-uppercase fw-semibold">Active Product SKUs</div>
+                        <div class="text-muted small text-uppercase fw-semibold">Active Products in Catalog</div>
                         <div class="fs-3 fw-bold text-dark mt-1">
                             ${totalProducts}
                         </div>
@@ -88,7 +88,7 @@
                     </div>
                 </div>
                 <div class="small text-muted mt-2">
-                    Across 4 merchandise categories
+                    Unique active items across 4 categories
                 </div>
             </div>
         </div>
@@ -232,15 +232,15 @@
             </div>
         </div>
 
-        <!-- Recent AI Forecast Logs -->
+        <!-- Recent Demand Projections -->
         <div class="col-lg-5">
             <div class="card shadow-sm h-100">
                 <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
                     <h5 class="mb-0 fw-bold">
-                        <i class="bi bi-cpu me-1 text-primary"></i> Recent AI Forecast Audits
+                        <i class="bi bi-graph-up-arrow me-1 text-primary"></i> Recent Demand Projections
                     </h5>
                     <a href="${pageContext.request.contextPath}/forecast?action=view" class="btn btn-outline-primary btn-sm">
-                        Forecasting Engine &rarr;
+                        Forecasting Center &rarr;
                     </a>
                 </div>
                 <div class="card-body p-0">
@@ -249,10 +249,10 @@
                             <thead class="table-light">
                                 <tr class="small text-muted">
                                     <th class="ps-3">Product</th>
-                                    <th>Model</th>
-                                    <th class="text-center">Predicted</th>
-                                    <th class="text-center">Reorder Qty</th>
-                                    <th class="text-end pe-3">Status</th>
+                                    <th>Forecast Method</th>
+                                    <th class="text-center">Expected Demand</th>
+                                    <th class="text-center">Reorder Target</th>
+                                    <th class="text-end pe-3">Inventory Health</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -265,7 +265,23 @@
                                                     <small class="text-muted"><code>${fl.sku}</code></small>
                                                 </td>
                                                 <td>
-                                                    <small class="badge bg-secondary">${fl.modelUsed}</small>
+                                                    <c:choose>
+                                                        <c:when test="${fl.modelUsed == 'LINEAR_REGRESSION'}">
+                                                            <span class="badge bg-light text-primary border">Trend Projection</span>
+                                                        </c:when>
+                                                        <c:when test="${fl.modelUsed == 'RIDGE_REGRESSION'}">
+                                                            <span class="badge bg-light text-info border">Ridge Forecast</span>
+                                                        </c:when>
+                                                        <c:when test="${fl.modelUsed == 'LASSO_REGRESSION'}">
+                                                            <span class="badge bg-light text-warning text-dark border">Lasso Forecast</span>
+                                                        </c:when>
+                                                        <c:when test="${fl.modelUsed == 'RANDOM_FOREST'}">
+                                                            <span class="badge bg-light text-success border">Pattern Ensemble</span>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <span class="badge bg-light text-dark border">Automated AI</span>
+                                                        </c:otherwise>
+                                                    </c:choose>
                                                 </td>
                                                 <td class="text-center fw-semibold">
                                                     ${fl.predictedSales} units
@@ -280,6 +296,9 @@
                                                         </c:when>
                                                         <c:when test="${fl.alertStatus == 'LOW_STOCK'}">
                                                             <span class="badge bg-warning text-dark">Low Stock</span>
+                                                        </c:when>
+                                                        <c:when test="${fl.alertStatus == 'OVERSTOCK'}">
+                                                            <span class="badge bg-info text-dark">Overstock</span>
                                                         </c:when>
                                                         <c:otherwise>
                                                             <span class="badge bg-success">Optimal</span>

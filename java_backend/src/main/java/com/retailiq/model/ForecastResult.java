@@ -74,6 +74,20 @@ public class ForecastResult implements java.io.Serializable {
         return randomForestTotal > 0 ? randomForestTotal : linearRegressionTotal;
     }
 
+    public List<Double> getChosenDailyForecast() {
+        if ("LINEAR_REGRESSION".equalsIgnoreCase(recommendedModel)) return linearRegressionDaily;
+        if ("RIDGE_REGRESSION".equalsIgnoreCase(recommendedModel)) return ridgeRegressionDaily;
+        if ("LASSO_REGRESSION".equalsIgnoreCase(recommendedModel)) return lassoRegressionDaily;
+        return (randomForestDaily != null && !randomForestDaily.isEmpty()) ? randomForestDaily : linearRegressionDaily;
+    }
+
+    public double getChosenMae() {
+        if ("LINEAR_REGRESSION".equalsIgnoreCase(recommendedModel)) return linearRegressionMae;
+        if ("RIDGE_REGRESSION".equalsIgnoreCase(recommendedModel)) return ridgeRegressionMae;
+        if ("LASSO_REGRESSION".equalsIgnoreCase(recommendedModel)) return lassoRegressionMae;
+        return randomForestMae;
+    }
+
     // Getters and Setters
     public int getProductId() { return productId; }
     public void setProductId(int productId) { this.productId = productId; }
