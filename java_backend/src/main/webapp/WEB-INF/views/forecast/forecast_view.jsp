@@ -13,9 +13,9 @@
     <div class="row align-items-center mb-4 g-3">
         <div class="col-md-6">
             <h2 class="fw-bold mb-1">
-                <i class="bi bi-cpu text-primary me-2"></i>AI Sales Forecasting & Inventory Rules
+                <i class="bi bi-cpu text-primary me-2"></i>AI Sales Forecasting & Inventory Intelligence
             </h2>
-            <p class="text-muted small mb-0">Multi-Model Regression (OLS, Ridge, Lasso, Random Forest) + Poisson Risk & AI Expert System</p>
+            <p class="text-muted small mb-0">Predictive demand insights and automated inventory optimization recommendations</p>
         </div>
         <div class="col-md-6">
             <form action="${pageContext.request.contextPath}/forecast" method="GET" class="row g-2 justify-content-md-end align-items-center">
@@ -86,7 +86,7 @@
         <!-- KPI 3: Demand Stability (CV %) & Kurtosis -->
         <div class="col-md-3">
             <div class="card p-3 shadow-sm h-100 border-start border-4 border-info">
-                <div class="text-muted small text-uppercase fw-semibold">Demand Stability (CV %)</div>
+                <div class="text-muted small text-uppercase fw-semibold">Demand Stability</div>
                 <div class="d-flex align-items-baseline gap-2 mt-1">
                     <span class="fs-3 fw-bold text-dark">${forecast.coefficientOfVariation}%</span>
                     <span class="badge ${forecast.demandStability == 'STABLE' ? 'bg-success' : (forecast.demandStability == 'MODERATE' ? 'bg-warning text-dark' : 'bg-danger')}">
@@ -94,49 +94,55 @@
                     </span>
                 </div>
                 <div class="small text-muted mt-1">
-                    Kurtosis: <strong>${forecast.kurtosis}</strong> (Tail Spikiness)
+                    Volatility Index: <strong>${forecast.kurtosis}</strong>
                 </div>
             </div>
         </div>
 
-        <!-- KPI 4: Poisson Stockout Risk -->
+        <!-- KPI 4: Stockout Risk Level -->
         <div class="col-md-3">
             <div class="card p-3 shadow-sm h-100 border-start border-4 ${forecast.poissonRiskLevel == 'CRITICAL' ? 'border-danger' : (forecast.poissonRiskLevel == 'ELEVATED' ? 'border-warning' : 'border-success')}">
-                <div class="text-muted small text-uppercase fw-semibold">Poisson Stockout Probability</div>
+                <div class="text-muted small text-uppercase fw-semibold">Stockout Risk Level</div>
                 <div class="fs-3 fw-bold ${forecast.poissonRiskLevel == 'CRITICAL' ? 'text-danger' : (forecast.poissonRiskLevel == 'ELEVATED' ? 'text-warning' : 'text-success')} mt-1">
                     ${forecast.poissonStockoutRiskPercentage}%
                 </div>
                 <div class="small text-muted mt-1">
-                    Service Level: <strong>95%</strong> | Safety Stock: <strong>${forecast.safetyStock}</strong>
+                    Target Service Level: <strong>95%</strong> | Safety Stock: <strong>${forecast.safetyStock}</strong>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- AI Rule Explanation Callout Box -->
+    <!-- Automated Inventory Advisory Callout Box -->
     <div class="alert ${forecast.alertStatus == 'CRITICAL_STOCKOUT' ? 'alert-danger' : (forecast.alertStatus == 'LOW_STOCK' ? 'alert-warning' : 'alert-primary')} shadow-sm mb-4">
         <h5 class="alert-heading fw-bold d-flex align-items-center">
-            <i class="bi bi-robot me-2 fs-4"></i> AI Recommendation Engine (IF-THEN Production Rules)
+            <i class="bi bi-shield-check me-2 fs-4"></i> Automated Inventory Advisory
         </h5>
-        <p class="mb-1">${forecast.ruleExplanation}</p>
-        <hr class="my-2">
-        <small class="text-muted">
-            FOPL Formalization: <code>&forall; p &isin; Products, InStock(p) &le; SafetyStock(p) &rArr; CriticalStockout(p)</code> | 
-            Formula applied: <code>Recommended_Qty = (Projected_Demand [${forecast.chosenTotalDemand} units] + Safety_Stock [${forecast.safetyStock} units]) - Current_Stock [${selectedProduct.currentStock} units]</code>
-        </small>
+        <p class="mb-2 fs-6">${forecast.ruleExplanation}</p>
+        <div class="row g-3 pt-2 border-top small text-muted">
+            <div class="col-sm-4">
+                <i class="bi bi-graph-up text-primary me-1"></i> <strong>Forecasted Demand:</strong> ${forecast.chosenTotalDemand} units (${horizonDays} days)
+            </div>
+            <div class="col-sm-4">
+                <i class="bi bi-shield-lock text-success me-1"></i> <strong>Target Safety Stock:</strong> ${forecast.safetyStock} units
+            </div>
+            <div class="col-sm-4">
+                <i class="bi bi-box-seam text-dark me-1"></i> <strong>Current Warehouse Stock:</strong> ${selectedProduct.currentStock} units
+            </div>
+        </div>
     </div>
 
-    <!-- Row: Chart & 4-Model Benchmark -->
+    <!-- Row: Chart & Model Comparison -->
     <div class="row g-4 mb-4">
         <!-- Interactive Chart -->
         <div class="col-lg-8">
             <div class="card shadow-sm h-100">
                 <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
                     <h5 class="mb-0 fw-bold">
-                        <i class="bi bi-graph-up me-1 text-primary"></i> Historical Sales vs. ${horizonDays}-Day Multi-Model Forecast
+                        <i class="bi bi-graph-up me-1 text-primary"></i> Historical Sales vs. ${horizonDays}-Day Forecast
                     </h5>
                     <span class="badge bg-light text-dark border">
-                        AI Recommended Model: <strong>${forecast.recommendedModel}</strong>
+                        Optimal Model: <strong>${forecast.recommendedModel}</strong>
                     </span>
                 </div>
                 <div class="card-body">
@@ -145,17 +151,17 @@
             </div>
         </div>
 
-        <!-- 4-Model Comparative Benchmark Grid (Machine Learning Syllabus Module II & IV) -->
+        <!-- Comparative Model Benchmark Grid -->
         <div class="col-lg-4">
             <div class="card shadow-sm h-100">
                 <div class="card-header bg-white py-3">
-                    <h5 class="mb-0 fw-bold">Multi-Model Benchmark (Syllabus Module II)</h5>
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-speedometer2 me-1 text-primary"></i> Forecast Model Comparison</h5>
                 </div>
                 <div class="card-body p-3">
-                    <!-- Model 1: OLS Linear Regression -->
+                    <!-- Model 1: Linear Regression -->
                     <div class="border rounded p-2 mb-2 bg-light">
                         <div class="d-flex justify-content-between align-items-center">
-                            <strong class="text-primary small">1. Linear Regression (OLS)</strong>
+                            <strong class="text-primary small">Linear Trend Model</strong>
                             <c:if test="${forecast.recommendedModel == 'LINEAR_REGRESSION'}">
                                 <span class="badge bg-success small"><i class="bi bi-trophy-fill me-1"></i> Best</span>
                             </c:if>
@@ -165,10 +171,10 @@
                         </div>
                     </div>
 
-                    <!-- Model 2: Ridge Regression (L2) -->
+                    <!-- Model 2: Ridge Regression -->
                     <div class="border rounded p-2 mb-2 bg-light">
                         <div class="d-flex justify-content-between align-items-center">
-                            <strong class="text-info small">2. Ridge Regression (L2)</strong>
+                            <strong class="text-info small">Ridge Regularized Model</strong>
                             <c:if test="${forecast.recommendedModel == 'RIDGE_REGRESSION'}">
                                 <span class="badge bg-success small"><i class="bi bi-trophy-fill me-1"></i> Best</span>
                             </c:if>
@@ -178,10 +184,10 @@
                         </div>
                     </div>
 
-                    <!-- Model 3: Lasso Regression (L1) -->
+                    <!-- Model 3: Lasso Regression -->
                     <div class="border rounded p-2 mb-2 bg-light">
                         <div class="d-flex justify-content-between align-items-center">
-                            <strong class="text-warning text-dark small">3. Lasso Regression (L1)</strong>
+                            <strong class="text-warning text-dark small">Lasso Regularized Model</strong>
                             <c:if test="${forecast.recommendedModel == 'LASSO_REGRESSION'}">
                                 <span class="badge bg-success small"><i class="bi bi-trophy-fill me-1"></i> Best</span>
                             </c:if>
@@ -191,10 +197,10 @@
                         </div>
                     </div>
 
-                    <!-- Model 4: Random Forest (Ensemble) -->
+                    <!-- Model 4: Random Forest -->
                     <div class="border rounded p-2 mb-2 bg-light">
                         <div class="d-flex justify-content-between align-items-center">
-                            <strong class="text-success small">4. Random Forest (Ensemble)</strong>
+                            <strong class="text-success small">Random Forest Ensemble</strong>
                             <c:if test="${forecast.recommendedModel == 'RANDOM_FOREST'}">
                                 <span class="badge bg-success small"><i class="bi bi-trophy-fill me-1"></i> Best</span>
                             </c:if>
@@ -205,8 +211,8 @@
                     </div>
 
                     <div class="alert alert-secondary small mb-0 py-2 mt-3">
-                        <i class="bi bi-info-circle me-1"></i>
-                        The system selects the model with lowest test <strong>MAE</strong> to minimize under-stocking risks.
+                        <i class="bi bi-check-circle-fill text-success me-1"></i>
+                        The system automatically selects the forecast model with the lowest prediction error (MAE) for this product.
                     </div>
                 </div>
             </div>

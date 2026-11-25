@@ -1,0 +1,8 @@
+# Build temporary files
+java_backend/target/tmp/
+*.log
+ml_service/service.log
+ml_service/venv/
+__pycache__/
+*.pyc
+.DS_Store

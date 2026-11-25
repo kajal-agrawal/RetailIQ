@@ -104,8 +104,18 @@ public class SalesServlet extends HttpServlet {
             BigDecimal totalAmount = BigDecimal.ZERO;
 
             for (int i = 0; i < productIds.length; i++) {
-                int pid = Integer.parseInt(productIds[i]);
-                int qty = Integer.parseInt(quantities[i]);
+                if (productIds[i] == null || productIds[i].trim().isEmpty()) continue;
+                if (quantities == null || i >= quantities.length || quantities[i] == null || quantities[i].trim().isEmpty()) continue;
+
+                int pid;
+                int qty;
+                try {
+                    pid = Integer.parseInt(productIds[i].trim());
+                    qty = Integer.parseInt(quantities[i].trim());
+                } catch (NumberFormatException nfe) {
+                    continue;
+                }
+
                 if (qty <= 0) continue;
 
                 Product p = productDAO.findById(pid);
@@ -116,6 +126,12 @@ public class SalesServlet extends HttpServlet {
                 SaleItem item = new SaleItem(pid, p.getProductName(), qty, p.getUnitPrice());
                 items.add(item);
                 totalAmount = totalAmount.add(item.getSubtotal());
+            }
+
+            if (items.isEmpty()) {
+                request.setAttribute("errorMessage", "Cart is empty. Please select valid products and quantities.");
+                showPOS(request, response);
+                return;
             }
 
             SaleTransaction tx = new SaleTransaction();

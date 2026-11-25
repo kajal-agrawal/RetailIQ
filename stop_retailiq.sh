@@ -18,8 +18,17 @@ if [ -f "$PID_FILE" ]; then
     rm -f "$PID_FILE"
 fi
 
-# Kill any stray processes listening on ports 5001 or 8080
-lsof -ti:5001 | xargs kill -9 2>/dev/null || true
-lsof -ti:8080 | xargs kill -9 2>/dev/null || true
+# Force kill any processes listening on ports 5001 or 8080
+PID_5001=$(lsof -t -i:5001 2>/dev/null || true)
+if [ -n "$PID_5001" ]; then
+    echo "Killing process on port 5001 ($PID_5001)..."
+    kill -9 $PID_5001 2>/dev/null || true
+fi
+
+PID_8080=$(lsof -t -i:8080 2>/dev/null || true)
+if [ -n "$PID_8080" ]; then
+    echo "Killing process on port 8080 ($PID_8080)..."
+    kill -9 $PID_8080 2>/dev/null || true
+fi
 
 echo "RetailIQ ports (5001, 8080) are clear and released."

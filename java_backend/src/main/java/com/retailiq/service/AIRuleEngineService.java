@@ -28,53 +28,52 @@ public class AIRuleEngineService {
         double forecastedDemand = forecast.getChosenTotalDemand();
 
         if (currentStock <= safetyStock) {
-            // RULE 1: Stockout Imminent
+            // Critical Stockout Imminent
             int recommendedQty = (int) Math.ceil((forecastedDemand + safetyStock) - currentStock);
             forecast.setAlertStatus("CRITICAL_STOCKOUT");
             forecast.setUrgencyLevel("HIGH");
             forecast.setRecommendedAction("EXPEDITE_REORDER");
             forecast.setRecommendedOrderQuantity(Math.max(10, recommendedQty));
             forecast.setRuleExplanation(
-                "Rule 1 [Critical Stockout]: Current stock (" + currentStock + 
-                ") is at or below the safety threshold (" + safetyStock + 
-                "). Expedite immediate supplier purchase to avoid store stockout."
+                "Critical Stockout Alert: Current inventory (" + currentStock + 
+                " units) is at or below the safety threshold (" + safetyStock + 
+                " units). Immediate supplier replenishment recommended to prevent store stockout."
             );
 
         } else if (currentStock <= reorderPoint) {
-            // RULE 2: Reorder Threshold Triggered
+            // Reorder Threshold Triggered
             int recommendedQty = (int) Math.ceil((forecastedDemand + safetyStock) - currentStock);
             forecast.setAlertStatus("LOW_STOCK");
             forecast.setUrgencyLevel("MEDIUM");
             forecast.setRecommendedAction("PLACE_STANDARD_ORDER");
             forecast.setRecommendedOrderQuantity(Math.max(5, recommendedQty));
             forecast.setRuleExplanation(
-                "Rule 2 [Low Stock Trigger]: Current stock (" + currentStock + 
-                ") has crossed the Reorder Point (" + reorderPoint + 
-                "). Place standard replenishment order."
+                "Low Stock Advisory: Current inventory (" + currentStock + 
+                " units) has crossed the reorder point (" + reorderPoint + 
+                " units). Place standard replenishment order."
             );
 
         } else if (currentStock <= (int)(2.5 * reorderPoint)) {
-            // RULE 3: Optimal Inventory Balance
+            // Optimal Inventory Balance
             forecast.setAlertStatus("OPTIMAL");
             forecast.setUrgencyLevel("NONE");
             forecast.setRecommendedAction("MAINTAIN_LEVELS");
             forecast.setRecommendedOrderQuantity(0);
             forecast.setRuleExplanation(
-                "Rule 3 [Optimal Health]: Current stock (" + currentStock + 
-                ") is balanced against projected demand (" + (int)forecastedDemand + 
-                " units). No replenishment needed."
+                "Optimal Inventory Level: Current inventory (" + currentStock + 
+                " units) is comfortably balanced against projected demand (" + (int)forecastedDemand + 
+                " units). No replenishment required."
             );
 
         } else {
-            // RULE 4: Overstock & Capital Lockup
+            // Overstock & Capital Lockup
             forecast.setAlertStatus("OVERSTOCK");
             forecast.setUrgencyLevel("LOW");
             forecast.setRecommendedAction("HALT_PURCHASE_AND_DISCOUNT");
             forecast.setRecommendedOrderQuantity(0);
             forecast.setRuleExplanation(
-                "Rule 4 [Overstock Detected]: Current stock (" + currentStock + 
-                ") exceeds 2.5x the Reorder Point (" + (int)(2.5 * reorderPoint) + 
-                "). Halt purchasing and consider seasonal marketing discounts."
+                "Overstock Advisory: Current inventory (" + currentStock + 
+                " units) exceeds operational targets. Recommend holding purchases and reviewing promotional discounts."
             );
         }
     }

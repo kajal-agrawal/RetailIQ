@@ -1,9 +1,27 @@
-2026-11-24 22:01:17,192 - INFO - Starting RetailIQ ML Microservice on http://127.0.0.1:5001
+2026-11-25 16:41:16,993 - INFO - Starting RetailIQ ML Microservice on http://127.0.0.1:5001
  * Serving Flask app 'app'
  * Debug mode: off
-2026-11-24 22:01:17,203 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+2026-11-25 16:41:17,005 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5001
  * Running on http://192.168.1.2:5001
-2026-11-24 22:01:17,203 - INFO - [33mPress CTRL+C to quit[0m
-2026-11-24 22:01:17,857 - INFO - 127.0.0.1 - - [24/Nov/2026 22:01:17] "GET /api/health HTTP/1.1" 200 -
+2026-11-25 16:41:17,005 - INFO - [33mPress CTRL+C to quit[0m
+2026-11-25 16:41:17,679 - INFO - 127.0.0.1 - - [25/Nov/2026 16:41:17] "GET /api/health HTTP/1.1" 200 -
+2026-11-25 16:43:23,109 - INFO - Generated forecast for product 5 across 7 days. Recommended: LASSO_REGRESSION | CV: 46.8%
+2026-11-25 16:43:23,110 - INFO - 127.0.0.1 - - [25/Nov/2026 16:43:23] "POST /api/forecast HTTP/1.1" 200 -
+2026-11-25 16:44:48,046 - INFO - Generated forecast for product 5 across 7 days. Recommended: LASSO_REGRESSION | CV: 46.8%
+2026-11-25 16:44:48,048 - INFO - 127.0.0.1 - - [25/Nov/2026 16:44:48] "POST /api/forecast HTTP/1.1" 200 -
+2026-11-25 17:36:42,922 - INFO - Generated forecast for product 5 across 7 days. Recommended: LASSO_REGRESSION | CV: 46.8%
+2026-11-25 17:36:42,922 - INFO - 127.0.0.1 - - [25/Nov/2026 17:36:42] "POST /api/forecast HTTP/1.1" 200 -
+2026-11-25 17:36:42,969 - INFO - Generated forecast for product 5 across 7 days. Recommended: LASSO_REGRESSION | CV: 46.8%
+2026-11-25 17:36:42,969 - INFO - 127.0.0.1 - - [25/Nov/2026 17:36:42] "POST /api/forecast HTTP/1.1" 200 -
+2026-11-25 17:37:04,808 - INFO - Generated forecast for product 2 across 7 days. Recommended: RANDOM_FOREST | CV: 56.37%
+2026-11-25 17:37:04,809 - INFO - 127.0.0.1 - - [25/Nov/2026 17:37:04] "POST /api/forecast HTTP/1.1" 200 -
+2026-11-25 17:37:09,214 - INFO - Generated forecast for product 1 across 7 days. Recommended: LINEAR_REGRESSION | CV: 38.19%
+2026-11-25 17:37:09,214 - INFO - 127.0.0.1 - - [25/Nov/2026 17:37:09] "POST /api/forecast HTTP/1.1" 200 -
+2026-11-25 17:37:15,849 - INFO - Generated forecast for product 1 across 14 days. Recommended: LINEAR_REGRESSION | CV: 38.19%
+2026-11-25 17:37:15,849 - INFO - 127.0.0.1 - - [25/Nov/2026 17:37:15] "POST /api/forecast HTTP/1.1" 200 -
+2026-11-25 17:37:19,090 - INFO - Generated forecast for product 4 across 14 days. Recommended: LASSO_REGRESSION | CV: 34.6%
+2026-11-25 17:37:19,091 - INFO - 127.0.0.1 - - [25/Nov/2026 17:37:19] "POST /api/forecast HTTP/1.1" 200 -
+2026-11-25 17:37:20,951 - INFO - Generated forecast for product 4 across 7 days. Recommended: LASSO_REGRESSION | CV: 34.6%
+2026-11-25 17:37:20,951 - INFO - 127.0.0.1 - - [25/Nov/2026 17:37:20] "POST /api/forecast HTTP/1.1" 200 -

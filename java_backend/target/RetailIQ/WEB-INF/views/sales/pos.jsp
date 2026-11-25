@@ -61,7 +61,11 @@
                                         </td>
                                         <td class="text-end pe-3">
                                             <button type="button" class="btn btn-sm btn-outline-primary" 
-                                                    onclick="addToCart(${p.productId}, '${p.productName}', ${p.unitPrice}, ${p.currentStock})"
+                                                    data-id="${p.productId}"
+                                                    data-name="<c:out value='${p.productName}' />"
+                                                    data-price="${p.unitPrice}"
+                                                    data-stock="${p.currentStock}"
+                                                    onclick="addToCartFromBtn(this)"
                                                     ${p.currentStock <= 0 ? 'disabled' : ''}>
                                                 <i class="bi bi-cart-plus me-1"></i> Add
                                             </button>
@@ -141,7 +145,29 @@
 <script>
 let cart = {};
 
+function escapeHtml(text) {
+    if (!text) return '';
+    return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+function addToCartFromBtn(btn) {
+    const id = parseInt(btn.getAttribute('data-id'));
+    const name = btn.getAttribute('data-name');
+    const price = parseFloat(btn.getAttribute('data-price'));
+    const stock = parseInt(btn.getAttribute('data-stock'));
+    addToCart(id, name, price, stock);
+}
+
 function addToCart(productId, name, price, maxStock) {
+    productId = parseInt(productId);
+    price = parseFloat(price);
+    maxStock = parseInt(maxStock);
+    
     if (cart[productId]) {
         if (cart[productId].qty + 1 > maxStock) {
             alert("Cannot add more. Reached maximum available stock (" + maxStock + ").");
@@ -154,7 +180,15 @@ function addToCart(productId, name, price, maxStock) {
     renderCart();
 }
 
+function adjustQty(productId, delta) {
+    productId = parseInt(productId);
+    if (cart[productId]) {
+        updateQty(productId, cart[productId].qty + delta);
+    }
+}
+
 function updateQty(productId, newQty) {
+    productId = parseInt(productId);
     newQty = parseInt(newQty);
     if (isNaN(newQty) || newQty <= 0) {
         removeFromCart(productId);
@@ -170,6 +204,7 @@ function updateQty(productId, newQty) {
 }
 
 function removeFromCart(productId) {
+    productId = parseInt(productId);
     delete cart[productId];
     renderCart();
 }
@@ -181,20 +216,19 @@ function clearCart() {
 
 function renderCart() {
     const tbody = document.getElementById("cartBody");
-    const emptyRow = document.getElementById("emptyCartRow");
     const checkoutBtn = document.getElementById("checkoutBtn");
     const itemsCountEl = document.getElementById("totalItemsCount");
     const grandTotalEl = document.getElementById("grandTotalDisplay");
 
     const keys = Object.keys(cart);
     if (keys.length === 0) {
-        tbody.innerHTML = `
-            <tr id="emptyCartRow">
-                <td colspan="4" class="text-center py-5 text-muted">
-                    <i class="bi bi-basket3 fs-2 d-block mb-2"></i>
-                    Cart is empty. Add products to begin checkout.
-                </td>
-            </tr>`;
+        tbody.innerHTML = 
+            '<tr id="emptyCartRow">' +
+                '<td colspan="4" class="text-center py-5 text-muted">' +
+                    '<i class="bi bi-basket3 fs-2 d-block mb-2"></i>' +
+                    'Cart is empty. Add products to begin checkout.' +
+                '</td>' +
+            '</tr>';
         itemsCountEl.innerText = "0";
         grandTotalEl.innerText = "$0.00";
         checkoutBtn.disabled = true;
@@ -205,31 +239,36 @@ function renderCart() {
     let totalItems = 0;
     let grandTotal = 0;
 
-    keys.forEach(k => {
+    keys.forEach(function(k) {
         const item = cart[k];
         const subtotal = item.qty * item.price;
         totalItems += item.qty;
         grandTotal += subtotal;
 
-        html += `
-            <tr>
-                <td class="ps-3">
-                    <div class="fw-semibold text-truncate" style="max-width: 170px;">${item.name}</div>
-                    <small class="text-muted">$${item.price.toFixed(2)} each</small>
-                    <input type="hidden" name="productId" value="${item.id}">
-                </td>
-                <td class="text-center">
-                    <input type="number" min="1" max="${item.maxStock}" name="quantity" 
-                           class="form-control form-control-sm text-center" 
-                           value="${item.qty}" onchange="updateQty(${item.id}, this.value)">
-                </td>
-                <td class="text-end fw-semibold">$${subtotal.toFixed(2)}</td>
-                <td class="text-center">
-                    <button type="button" class="btn btn-link text-danger p-0" onclick="removeFromCart(${item.id})">
-                        <i class="bi bi-x-circle"></i>
-                    </button>
-                </td>
-            </tr>`;
+        html += '<tr>' +
+            '<td class="ps-3">' +
+                '<div class="fw-semibold text-truncate" style="max-width: 170px;">' + escapeHtml(item.name) + '</div>' +
+                '<small class="text-muted">$' + item.price.toFixed(2) + ' each</small>' +
+                '<input type="hidden" name="productId" value="' + item.id + '">' +
+            '</td>' +
+            '<td class="text-center">' +
+                '<div class="input-group input-group-sm justify-content-center" style="width: 110px; margin: 0 auto;">' +
+                    '<button class="btn btn-outline-secondary px-2" type="button" onclick="adjustQty(' + item.id + ', -1)">-</button>' +
+                    '<input type="number" min="1" max="' + item.maxStock + '" name="quantity" ' +
+                           'class="form-control form-control-sm text-center px-1" ' +
+                           'value="' + item.qty + '" ' +
+                           'oninput="updateQty(' + item.id + ', this.value)" ' +
+                           'onchange="updateQty(' + item.id + ', this.value)">' +
+                    '<button class="btn btn-outline-secondary px-2" type="button" onclick="adjustQty(' + item.id + ', 1)">+</button>' +
+                '</div>' +
+            '</td>' +
+            '<td class="text-end fw-semibold">$' + subtotal.toFixed(2) + '</td>' +
+            '<td class="text-center">' +
+                '<button type="button" class="btn btn-link text-danger p-0" onclick="removeFromCart(' + item.id + ')">' +
+                    '<i class="bi bi-x-circle"></i>' +
+                '</button>' +
+            '</td>' +
+        '</tr>';
     });
 
     tbody.innerHTML = html;

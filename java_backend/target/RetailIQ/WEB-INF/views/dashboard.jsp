@@ -132,8 +132,7 @@
                     Inventory Turnover Ratio (ITR): <span class="badge bg-primary fs-6 ms-2">${inventoryTurnover}x</span>
                 </h6>
                 <p class="text-muted small mb-0">
-                    Formula: <code>Cost of Goods Sold (COGS) / Average Inventory Value</code>. 
-                    An ITR of <strong>${inventoryTurnover}x</strong> demonstrates how efficiently working capital is cycled without excessive holding costs.
+                    Reflects the efficiency of working capital cycling. An ITR of <strong>${inventoryTurnover}x</strong> demonstrates healthy product velocity without excessive holding costs.
                 </p>
             </div>
             <div class="col-md-4 text-md-end mt-2 mt-md-0">

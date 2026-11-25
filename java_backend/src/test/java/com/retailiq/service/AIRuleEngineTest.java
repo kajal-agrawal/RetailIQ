@@ -45,7 +45,7 @@ public class AIRuleEngineTest {
         assertEquals("HIGH", forecast.getUrgencyLevel(), "Urgency must be HIGH");
         assertEquals("EXPEDITE_REORDER", forecast.getRecommendedAction(), "Action must be EXPEDITE_REORDER");
         assertTrue(forecast.getRecommendedOrderQuantity() > 0, "Must recommend positive order quantity");
-        assertTrue(forecast.getRuleExplanation().contains("Rule 1"), "Explanation must reference Rule 1");
+        assertTrue(forecast.getRuleExplanation().contains("Critical Stockout Alert"), "Explanation must reference Critical Stockout Alert");
     }
 
     @Test
@@ -67,7 +67,7 @@ public class AIRuleEngineTest {
         assertEquals("MEDIUM", forecast.getUrgencyLevel(), "Urgency must be MEDIUM");
         assertEquals("PLACE_STANDARD_ORDER", forecast.getRecommendedAction(), "Action must be PLACE_STANDARD_ORDER");
         assertTrue(forecast.getRecommendedOrderQuantity() > 0, "Must recommend positive reorder quantity");
-        assertTrue(forecast.getRuleExplanation().contains("Rule 2"), "Explanation must reference Rule 2");
+        assertTrue(forecast.getRuleExplanation().contains("Low Stock Advisory"), "Explanation must reference Low Stock Advisory");
     }
 
     @Test
@@ -89,7 +89,7 @@ public class AIRuleEngineTest {
         assertEquals("NONE", forecast.getUrgencyLevel(), "Urgency must be NONE");
         assertEquals("MAINTAIN_LEVELS", forecast.getRecommendedAction(), "Action must be MAINTAIN_LEVELS");
         assertEquals(0, forecast.getRecommendedOrderQuantity(), "Recommended order quantity must be zero for optimal stock");
-        assertTrue(forecast.getRuleExplanation().contains("Rule 3"), "Explanation must reference Rule 3");
+        assertTrue(forecast.getRuleExplanation().contains("Optimal Inventory Level"), "Explanation must reference Optimal Inventory Level");
     }
 
     @Test
@@ -111,6 +111,6 @@ public class AIRuleEngineTest {
         assertEquals("LOW", forecast.getUrgencyLevel(), "Urgency must be LOW");
         assertEquals("HALT_PURCHASE_AND_DISCOUNT", forecast.getRecommendedAction(), "Action must be HALT_PURCHASE_AND_DISCOUNT");
         assertEquals(0, forecast.getRecommendedOrderQuantity(), "Recommended order quantity must be zero for overstock");
-        assertTrue(forecast.getRuleExplanation().contains("Rule 4"), "Explanation must reference Rule 4");
+        assertTrue(forecast.getRuleExplanation().contains("Overstock Advisory"), "Explanation must reference Overstock Advisory");
     }
 }
